@@ -40,6 +40,8 @@ dependencies:
   dio: ^4.0.6
   intl: ^0.18.0
   pretty_dio_logger: ^1.2.0-beta-1
+  http: ^0.13.5
+  html: ^0.15.1
 
 dev_dependencies:
   flutter_test:

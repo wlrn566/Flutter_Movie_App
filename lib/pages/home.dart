@@ -6,6 +6,7 @@ import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:intl/intl.dart';
 import 'package:movie_app/model/dailyBoxOfficeList.dart';
+import 'package:movie_app/model/movieInfoResult.dart';
 import 'package:movie_app/repository/movie.dart';
 
 class HomePage extends StatefulWidget {
@@ -29,8 +30,11 @@ class _HomePageState extends State<HomePage> {
   }
 
   void init() async {
-    _dailyBoxOfficeList = await _movieRepository.getMovieBoxOffice();
-    setState(() {});
+    setState(() {
+      _movieRepository.getDailyBoxOffice().then((value) {
+        _dailyBoxOfficeList = value;
+      });
+    });
   }
 
   @override
@@ -126,23 +130,35 @@ class _HomePageState extends State<HomePage> {
                           : index == 4
                             ? const EdgeInsets.fromLTRB(5, 10, 10, 10)
                             : const EdgeInsets.fromLTRB(5, 10, 5, 10),
-                        child: SizedBox(
-                          width: 200,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Container(
-                                height: 250,
-                                decoration: BoxDecoration(
-                                  border: Border.all(width: 2, color: Colors.grey)
+                        child: InkWell(
+                          onTap: () async {
+                            Navigator.pushNamed(
+                              context, '/detail', 
+                              arguments: {
+                                'movieCd' : _dailyBoxOfficeList[index].movieCd, 
+                                'imageUrl' : _dailyBoxOfficeList[index].imageUrl,
+                                'link' : _dailyBoxOfficeList[index].link,
+                              }
+                            );
+                          },
+                          child: SizedBox(
+                            width: 200,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Container(
+                                  height: 250,
+                                  decoration: BoxDecoration(
+                                    border: Border.all(width: 2, color: Colors.grey)
+                                  ),
+                                  child: Image.network(_dailyBoxOfficeList[index].imageUrl!, fit: BoxFit.fill,),
                                 ),
-                                child: Image.network(_dailyBoxOfficeList[index].imageUrl!, fit: BoxFit.fill,),
-                              ),
-                              Text(
-                                "${_dailyBoxOfficeList[index].rank}. ${_dailyBoxOfficeList[index].movieNm!}",
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ],
+                                Text(
+                                  "${_dailyBoxOfficeList[index].rank}. ${_dailyBoxOfficeList[index].movieNm}",
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       );

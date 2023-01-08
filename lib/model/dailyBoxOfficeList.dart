@@ -58,16 +58,18 @@ class DailyBoxOfficeListElement {
         required this.audiAcc,
         required this.peopleNm,
         // required this.prdtYear,
+        required this.link,
         required this.imageUrl,
     });
 
-    final String? rank;
-    final String? movieCd;
-    final String? movieNm;
-    final DateTime? openDt;
+    final String rank;
+    final String movieCd;
+    final String movieNm;
+    final DateTime openDt;
     final String? audiAcc;
     late String? peopleNm;
     // late String? prdtYear;
+    late String? link;
     late String? imageUrl;
 
     factory DailyBoxOfficeListElement.fromJson(Map<String, dynamic> json) => DailyBoxOfficeListElement(
@@ -78,6 +80,7 @@ class DailyBoxOfficeListElement {
         audiAcc: json["audiAcc"],
         peopleNm: null,
         // prdtYear: null,
+        link: null,
         imageUrl: null,
     );
 
@@ -85,10 +88,11 @@ class DailyBoxOfficeListElement {
         "rank": rank,
         "movieCd": movieCd,
         "movieNm": movieNm,
-        "openDt": "${openDt!.year.toString().padLeft(4, '0')}-${openDt!.month.toString().padLeft(2, '0')}-${openDt!.day.toString().padLeft(2, '0')}",
+        "openDt": "${openDt.year.toString().padLeft(4, '0')}-${openDt.month.toString().padLeft(2, '0')}-${openDt.day.toString().padLeft(2, '0')}",
         "audiAcc": audiAcc,
         "peopleNm": peopleNm,
         // "prdtYear": prdtYear,
+        "link": link,
         "image_url": imageUrl,
     };
 
