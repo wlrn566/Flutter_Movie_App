@@ -88,8 +88,11 @@ class MovieRepository {
       for (int i=0; i<dailBoxOfficeList.length; i++) {
         final responseData = await dio.get("http://www.kobis.or.kr/kobisopenapi/webservice/rest/movie/searchMovieInfo.json?key=$MOVIE_KEY&movieCd=${dailBoxOfficeList[i].movieCd}");
         
-        // 제작년도 값 넣어주기
+        // 감독명 값 넣어주기
         dailBoxOfficeList[i].prdtYear = responseData.data['movieInfoResult']['movieInfo']['prdtYear'];
+
+        // 제작년도 값 넣어주기
+        dailBoxOfficeList[i].peopleNm = responseData.data['movieInfoResult']['movieInfo']['directors'][0]['peopleNm'];
       }
 
       await getMoviePosterImages(dailBoxOfficeList: dailBoxOfficeList);
@@ -114,6 +117,12 @@ class MovieRepository {
         final responseData = await dio.get(
           "https://openapi.naver.com/v1/search/movie.json?query=${dailBoxOfficeList[i].movieNm}&yearfrom=${dailBoxOfficeList[i].prdtYear}&yearto=${dailBoxOfficeList[i].prdtYear}"
         );
+
+        for (int j=0; j<responseData.data['items'].toList().lengh; j++) {
+          if (responseData.data['items'][j]['director'].toString().contains(dailBoxOfficeList[i].peopleNm!)) {
+            dailBoxOfficeList[i].imageUrl = responseData.data['items'][j]['image'];
+          }
+        }
 
       }
 

@@ -56,6 +56,7 @@ class DailyBoxOfficeListElement {
         required this.movieNm,
         required this.openDt,
         required this.audiAcc,
+        required this.peopleNm,
         required this.prdtYear,
         required this.imageUrl,
     });
@@ -65,6 +66,7 @@ class DailyBoxOfficeListElement {
     final String? movieNm;
     final DateTime? openDt;
     final String? audiAcc;
+    late String? peopleNm;
     late String? prdtYear;
     late String? imageUrl;
 
@@ -74,6 +76,7 @@ class DailyBoxOfficeListElement {
         movieNm: json["movieNm"],
         openDt: DateTime.parse(json["openDt"]),
         audiAcc: json["audiAcc"],
+        peopleNm: null,
         prdtYear: null,
         imageUrl: null,
     );
@@ -84,6 +87,7 @@ class DailyBoxOfficeListElement {
         "movieNm": movieNm,
         "openDt": "${openDt!.year.toString().padLeft(4, '0')}-${openDt!.month.toString().padLeft(2, '0')}-${openDt!.day.toString().padLeft(2, '0')}",
         "audiAcc": audiAcc,
+        "peopleNm": peopleNm,
         "prdtYear": prdtYear,
         "image_url": imageUrl,
     };
