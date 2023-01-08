@@ -4,6 +4,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:intl/intl.dart';
 import 'package:movie_app/model/dailyBoxOfficeList.dart';
 import 'package:movie_app/repository/movie.dart';
 
@@ -28,7 +29,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   void init() async {
-     await _movieRepository.getMovieBoxOffice();
+    _dailyBoxOfficeList = await _movieRepository.getMovieBoxOffice();
+    setState(() {});
   }
 
   @override
@@ -89,40 +91,66 @@ class _HomePageState extends State<HomePage> {
                 )
               ),
             if (_dailyBoxOfficeList.isNotEmpty)
-            SizedBox(
-              height: 250,
-              width: MediaQuery.of(context).size.width,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                shrinkWrap: true,
-                physics: const BouncingScrollPhysics(),
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: index == 0 
-                      ? const EdgeInsets.fromLTRB(10, 10, 5, 10) 
-                      : index == 4
-                        ? const EdgeInsets.fromLTRB(5, 10, 10, 10)
-                        : const EdgeInsets.fromLTRB(5, 10, 5, 10),
-                    child: SizedBox(
-                      width: 200,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Container(
-                            height: 200,
-                            color: Colors.amber,
-                          ),
-                          Text(
-                            _dailyBoxOfficeList[index].movieNm!,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ],
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20.0, 20.0, 20.0, 0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children:  [
+                      const Text(
+                        "일일 박스오피스",
+                        style: TextStyle(
+                          fontSize: 20.0,
+                          fontWeight: FontWeight.w700
+                        ),
                       ),
-                    ),
-                  );
-                },
-                itemCount: _dailyBoxOfficeList.length,
-              ),
+                      Text(
+                        DateFormat("MM.dd").format(DateTime.now()),
+                      )
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  height: 300,
+                  width: MediaQuery.of(context).size.width,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    shrinkWrap: true,
+                    physics: const BouncingScrollPhysics(),
+                    itemBuilder: (context, index) {
+                      return Padding(
+                        padding: index == 0 
+                          ? const EdgeInsets.fromLTRB(10, 10, 5, 10) 
+                          : index == 4
+                            ? const EdgeInsets.fromLTRB(5, 10, 10, 10)
+                            : const EdgeInsets.fromLTRB(5, 10, 5, 10),
+                        child: SizedBox(
+                          width: 200,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Container(
+                                height: 250,
+                                decoration: BoxDecoration(
+                                  border: Border.all(width: 2, color: Colors.grey)
+                                ),
+                                child: Image.network(_dailyBoxOfficeList[index].imageUrl!, fit: BoxFit.fill,),
+                              ),
+                              Text(
+                                "${_dailyBoxOfficeList[index].rank}. ${_dailyBoxOfficeList[index].movieNm!}",
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                    itemCount: _dailyBoxOfficeList.length,
+                  ),
+                ),
+              ],
             )
           ],
         ),
