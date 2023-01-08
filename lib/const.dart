@@ -1,1 +1,3 @@
 const MOVIE_KEY = "9a57f419da979fc9450f493a071fd7d8";
+const NAVER_CLIENT_ID = "_OQpsohHHCbXbYCRkQ4n";
+const NAVER_CLIENT_SECRET = "cKDeIFbyw6";

@@ -4,6 +4,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:movie_app/model/dailyBoxOfficeList.dart';
 import 'package:movie_app/repository/movie.dart';
 
 class HomePage extends StatefulWidget {
@@ -18,16 +19,16 @@ class _HomePageState extends State<HomePage> {
 
   final MovieRepository _movieRepository = MovieRepository();
 
+  List<DailyBoxOfficeListElement> _dailyBoxOfficeList = [];
+
   @override
   void initState() {
     super.initState();
-    _movieRepository.getMovie();
+    init();
   }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    
+  void init() async {
+     await _movieRepository.getMovieBoxOffice();
   }
 
   @override
@@ -80,11 +81,16 @@ class _HomePageState extends State<HomePage> {
                 ),
               ],
             ),
-            Container(
-              decoration: BoxDecoration(
-                border: Border.all(width: 1, color: Colors.blue)
+            if (_dailyBoxOfficeList.isEmpty)
+              const SizedBox(
+                height: 250,
+                child: Center(
+                  child: CircularProgressIndicator()
+                )
               ),
-              height: 200,
+            if (_dailyBoxOfficeList.isNotEmpty)
+            SizedBox(
+              height: 250,
               width: MediaQuery.of(context).size.width,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
@@ -97,13 +103,25 @@ class _HomePageState extends State<HomePage> {
                       : index == 4
                         ? const EdgeInsets.fromLTRB(5, 10, 10, 10)
                         : const EdgeInsets.fromLTRB(5, 10, 5, 10),
-                    child: Container(
+                    child: SizedBox(
                       width: 200,
-                      color: Colors.amber
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Container(
+                            height: 200,
+                            color: Colors.amber,
+                          ),
+                          Text(
+                            _dailyBoxOfficeList[index].movieNm!,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
                     ),
                   );
                 },
-                itemCount: 5,
+                itemCount: _dailyBoxOfficeList.length,
               ),
             )
           ],
