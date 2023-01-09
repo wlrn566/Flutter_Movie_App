@@ -71,7 +71,7 @@ class _DetailPageState extends State<DetailPage> {
         child: Scaffold(
           backgroundColor: Colors.transparent,
           appBar: AppBar(
-            title: Text("영화 상세 정보"),
+            title: const Text("영화 상세 정보"),
           ),
           body: Padding(
             padding: const EdgeInsets.all(10.0),
@@ -79,11 +79,13 @@ class _DetailPageState extends State<DetailPage> {
               child: SingleChildScrollView(
                 child: Column(
                   children: [
+                    const SizedBox(height: 20,),
                     SizedBox(
                       height: 250,
                       child: Column(
                         children: [
                           getText(movieInfoResult.movieInfoResult.movieInfo.movieNm!, 24.0),
+                          const SizedBox(height: 20,),
                           SizedBox(
                             height: 200,
                             child: Image.network(widget.imageUrl, fit: BoxFit.fill,)
@@ -91,27 +93,52 @@ class _DetailPageState extends State<DetailPage> {
                         ],
                       ),
                     ),
+                    const SizedBox(height: 20,),
                     SizedBox(
-                      height: MediaQuery.of(context).size.height - kToolbarHeight - 300,
+                      height: 100,
                       child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Flexible(
-                            child: RichText(
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 100,
-                            strutStyle: StrutStyle(fontSize: 16.0),
-                            text: TextSpan(
-                                text: content,
-                                style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 15.0,
-                                  )
-                                ),
-                            )
+                          Row(
+                            children: [
+                              getInfoRowWidget(
+                                "장르", 
+                                movieInfoResult.movieInfoResult.movieInfo.genres!.map((e) => e!.genreNm).toList().toString()
+                                .substring
+                                (
+                                  1,
+                                  movieInfoResult.movieInfoResult.movieInfo.genres!.map((e) => e!.genreNm).toList().toString().length - 1
+                                )
+                              ),
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              getInfoRowWidget("감독", movieInfoResult.movieInfoResult.movieInfo.directors![0]!.peopleNm!)
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              getInfoRowWidget(
+                                "출연", 
+                                movieInfoResult.movieInfoResult.movieInfo.actors!.map((e) => e!.peopleNm!).toList().toString()
+                                .substring
+                                (
+                                  1, 
+                                  movieInfoResult.movieInfoResult.movieInfo.actors!.map((e) => e!.peopleNm!).toList().toString().length - 1
+                                )
+                              )
+                            ],
                           ),
                         ],
-                      ),
+                      )
                     ),
+                    const SizedBox(height: 20),
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height - kToolbarHeight - 450,
+                      child: Text(content, style: const TextStyle(color: Colors.white), overflow: TextOverflow.fade,),
+                    ),
+                    const SizedBox(height: 20),
                   ],
                 ),
               ),
@@ -139,8 +166,26 @@ class _DetailPageState extends State<DetailPage> {
       style: TextStyle(
         fontSize: fontSize,
         color: Colors.white,
-        fontWeight: FontWeight.w700
-      )
+        fontWeight: FontWeight.w700,
+      ),
+      overflow: TextOverflow.ellipsis,
     );
   }
+
+  Widget getInfoRowWidget(String title, String into) {
+  return SizedBox(
+    width: MediaQuery.of(context).size.width - 30,
+    child: Row(
+      children: [
+        getText(title, 18.0),
+        const SizedBox(width: 10),
+        Expanded(
+          flex: 1,
+          child: getText(into, 15.0)
+        ),
+      ],
+    ),
+  );
 }
+}
+

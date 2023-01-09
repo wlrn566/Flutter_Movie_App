@@ -103,7 +103,7 @@ class MovieRepository {
 
   // 박스오피스 영화 상세 조회
   Future<MovieInfoResult> getMovieDetail({required String movieCd}) async {
-    dio.interceptors.add(logger);
+    // dio.interceptors.add(logger);
     log("getMovieDetail");
 
     try {
