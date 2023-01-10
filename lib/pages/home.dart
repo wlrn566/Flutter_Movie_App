@@ -7,6 +7,7 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:intl/intl.dart';
 import 'package:movie_app/model/dailyBoxOfficeList.dart';
 import 'package:movie_app/model/movieInfoResult.dart';
+import 'package:movie_app/model/upcoming_movies.dart';
 import 'package:movie_app/repository/movie.dart';
 
 class HomePage extends StatefulWidget {
@@ -22,6 +23,10 @@ class _HomePageState extends State<HomePage> {
   final MovieRepository _movieRepository = MovieRepository();
 
   List<DailyBoxOfficeListElement> _dailyBoxOfficeList = [];
+  List<MovieList> upComingMovieList = [];
+
+  int curPage = 1;
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
@@ -30,10 +35,32 @@ class _HomePageState extends State<HomePage> {
   }
 
   void init() async {
-    setState(() {
-      _movieRepository.getDailyBoxOffice().then((value) {
+    _movieRepository.getDailyBoxOffice().then((value) {
+      setState(() {
         _dailyBoxOfficeList = value;
       });
+    });
+    _movieRepository.getUpComingMovies(curPage: curPage).then((value) {
+      setState(() {
+        upComingMovieList = value;
+        log(upComingMovieList.toString());
+      });
+    });
+
+    _scrollController.addListener(() {
+      print('offset = ${_scrollController.offset}');
+      if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
+        log("last index");
+        setState(() {
+          curPage ++;
+        });
+        _movieRepository.getUpComingMovies(curPage: curPage).then((value) {
+          setState(() {
+            upComingMovieList.addAll(value);
+            log(upComingMovieList.toString());
+          });
+        });
+      }
     });
   }
 
@@ -166,6 +193,83 @@ class _HomePageState extends State<HomePage> {
                     itemCount: _dailyBoxOfficeList.length,
                   ),
                 ),
+              ],
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Padding(
+                  padding: EdgeInsets.fromLTRB(20.0, 20.0, 20.0, 0),
+                  child:  Text(
+                    "2023년 개봉 예정 영화",
+                    style: TextStyle(
+                      fontSize: 20.0,
+                      fontWeight: FontWeight.w700
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 300,
+                  width: MediaQuery.of(context).size.width,
+                  child: ListView.builder(
+                    controller: _scrollController,
+                    scrollDirection: Axis.horizontal,
+                    shrinkWrap: true,
+                    physics: const BouncingScrollPhysics(),
+                    itemBuilder: (context, index) {
+                      return Padding(
+                        padding: index == 0 
+                          ? const EdgeInsets.fromLTRB(10, 10, 5, 10) 
+                          : index == 4
+                            ? const EdgeInsets.fromLTRB(5, 10, 10, 10)
+                            : const EdgeInsets.fromLTRB(5, 10, 5, 10),
+                        child: InkWell(
+                          onTap: () async {
+                            // Navigator.pushNamed(
+                            //   context, '/detail', 
+                            //   arguments: {
+                            //     'movieCd' : _dailyBoxOfficeList[index].movieCd, 
+                            //     'imageUrl' : _dailyBoxOfficeList[index].imageUrl,
+                            //     'link' : _dailyBoxOfficeList[index].link,
+                            //   }
+                            // );
+                          },
+                          child: SizedBox(
+                            width: 200,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Container(
+                                  height: 250,
+                                  decoration: BoxDecoration(
+                                    border: Border.all(width: 2, color: Colors.grey)
+                                  ),
+                                  child: Image.network(
+                                    upComingMovieList[index].imageUrl!, fit: BoxFit.fill,
+                                    errorBuilder: (context, error, stackTrace) => const SizedBox(
+                                      height: 250,
+                                      width: 200,
+                                      child: Icon(
+                                        Icons.image_not_supported,
+                                        size: 100,
+                                      )
+                                    ),
+                                  ),
+                                ),
+                                Text(
+                                  "${index+1} ${upComingMovieList[index].movieNm}",
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                    itemCount: upComingMovieList.length,
+                  ),
+                ),
+                const SizedBox(height: 24.0),
               ],
             )
           ],

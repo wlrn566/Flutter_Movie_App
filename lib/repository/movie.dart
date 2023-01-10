@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:movie_app/const.dart';
 import 'package:movie_app/model/dailyBoxOfficeList.dart';
 import 'package:movie_app/model/movieInfoResult.dart';
+import 'package:movie_app/model/upcoming_movies.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
 class MovieRepository {
@@ -113,4 +114,49 @@ class MovieRepository {
       return throw e.toString();
     }
   }
+
+  // 개봉예정 영화 조회
+  Future<List<MovieList>> getUpComingMovies({required int curPage}) async {
+    // dio.interceptors.add(logger);
+    log("getUpComingMovies");
+
+    try {
+        final responseData = await dio.get("http://www.kobis.or.kr/kobisopenapi/webservice/rest/movie/searchMovieList.json?key=$MOVIE_KEY&openStartDt=2023&openEndDt=2023&curPage=$curPage");
+        return getUpComingMoviePosterImages(upComingMovies: UpcomingMovies.fromJson(responseData.data).movieListResult!.movieList);
+    } catch (e) {
+      return throw e.toString();
+    }
+  }
+
+  // 개봉예정 영화들의 포스터 이미지 조회
+  Future<List<MovieList>> getUpComingMoviePosterImages({required List<MovieList> upComingMovies}) async {
+    log("getMoviePosterImages");
+
+    dio.options.headers = {
+      "X-Naver-Client-Id" : NAVER_CLIENT_ID,
+      "X-Naver-Client-Secret" : NAVER_CLIENT_SECRET
+    };
+
+    upComingMovies.retainWhere((element) => element.directors!.isNotEmpty);
+
+    try {
+      for (int i=0; i<upComingMovies.length; i++) {
+        final responseData = await dio.get(
+          "https://openapi.naver.com/v1/search/movie.json?query=${upComingMovies[i].movieNm}"
+        );
+
+        for (int j=0; j<responseData.data['items'].toList().length; j++) {
+          if (responseData.data['items'][j]['director'].toString().contains(upComingMovies[i].directors![0]!.peopleNm!)) {
+            upComingMovies[i].imageUrl = responseData.data['items'][j]['image'];
+          }
+        }
+      }
+      upComingMovies.retainWhere((element) => element.imageUrl != null);
+
+      return upComingMovies;
+
+    } catch (e) {
+      return throw e.toString();
+    }
+  } 
 }
