@@ -23,7 +23,7 @@ class MovieRepository {
   // 일일 박스오피스 조회
   Future<List<DailyBoxOfficeListElement>> getDailyBoxOffice() async {
     log("getDailyBoxOffice");
-    // dio.interceptors.add(logger);
+    dio.interceptors.add(logger);
     
     DateTime now = DateTime.now();
     DateTime yesterDay = now.subtract(const Duration(days: 1));
